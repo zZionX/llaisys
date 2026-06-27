@@ -6,6 +6,18 @@ Nanonona 是一个以学习 AI infra 和大模型推理系统为目的的轻量�
 
 这个项目不是生产级 vLLM 替代品。它是本人的一个可读、可测、可 benchmark 的推理引擎学习项目，用来学习从 CPU 调度层、KV cache 管理、模型结构拼装到 GPU kernel 实现的完整链路。
 
+## 目录
+
+- [项目亮点](#项目亮点)
+- [目录结构](#目录结构)
+- [架构概览](#架构概览)
+- [环境依赖](#环境依赖)
+- [运行 Web Demo](#运行-web-demo)
+- [正确性测试](#正确性测试)
+- [Benchmark 与实验结论](#benchmark-与实验结论)
+- [初步改进方向](#初步改进方向)
+- [English](#english)
+
 ## 项目亮点
 
 - 类 vLLM/nano-vllm 的 CPU 控制层：请求进入 waiting 队列，scheduler 按 prefill/decode 两阶段持续调度。
@@ -64,7 +76,7 @@ flowchart TD
 
 ## 环境依赖
 
-建议使用 Linux + NVIDIA GPU + CUDA 环境运行。Triton kernel 和大部分测试都依赖 CUDA。
+建议使用 Linux + NVIDIA RTX3090 + CUDA 环境运行。Triton kernel 和大部分测试都依赖 CUDA。
 
 推荐 Python 版本：`>=3.10`。
 
@@ -208,14 +220,13 @@ prefix cache 将实际需要执行的 prefill token 从 33792 降到 2048，TTFT
 
 这部分结果的意义不在于追平 vLLM，而是定位学习型实现和成熟生产引擎之间的差距。vLLM 在 CUDA graph、kernel 融合、内存管理、调度策略和长期工程优化上都有大量积累；nanonona 的结果说明核心机制有效，但仍有明确优化空间。
 
-## 当前限制与后续方向
+## 初步改进方向
 
-- 当前主要围绕 Qwen2/DeepSeek-R1-Distill-Qwen-1.5B 推理路径实现，尚不是通用多模型框架。
-- 只实现单机单卡推理，没有 tensor parallel、pipeline parallel 或分布式 serving。
-- sampling 目前较简单，`SamplingParams` 主要支持 temperature、max_tokens、ignore_eos，还没有 top-k/top-p。
-- Web demo 没有流式输出，也不持久化历史对话。
-- prefix cache admission 还有一个已用 `expectedFailure` 记录的 scheduler 边界问题。
-- benchmark 结果依赖服务器 GPU、CUDA、PyTorch/Triton/vLLM 版本和 warmup 策略，不应跨机器直接比较绝对值。
+- 当前主要围绕 Qwen2/DeepSeek-R1-Distill-Qwen-1.5B 基础推理路径实现，后续可学习更前沿的模型架构，如使用MoE的模型乃至多模态模型。
+- 只实现单机单卡推理，后续可继续尝试 tensor parallel、pipeline parallel 或分布式 serving。
+- sampling 目前较简单，`SamplingParams` 主要支持 temperature、max_tokens、ignore_eos，还没有 top-k/top-p。且最近有FlashSampling的工作将lm_head+sampler进行算子融合，可尝试跟进该工作。
+- chunck prefill、PD分离、CUDA graph等 vllm 中广泛应用的机制还有待学习实践。
+
 
 ---
 
@@ -224,6 +235,17 @@ prefix cache 将实际需要执行的 prefill token 从 33792 降到 2048，TTFT
 Nanonona is a lightweight LLM inference framework built for learning AI infrastructure. It follows the high-level serving structure of nano-vllm and implements continuous batching, paged attention, prefix caching, and most inference-time GPU operators in Triton.
 
 This repository is not intended to replace production engines such as vLLM. It is a compact, readable, testable project that demonstrates the full path from CPU-side scheduling and KV cache management to Qwen2 model assembly and custom CUDA kernels.
+
+## Table of Contents
+
+- [Highlights](#highlights)
+- [Repository Layout](#repository-layout)
+- [Installation](#installation)
+- [Web Demo](#web-demo)
+- [Tests](#tests)
+- [Benchmark Summary](#benchmark-summary)
+- [Limitations](#limitations)
+- [Improvement Roadmap](#improvement-roadmap)
 
 ## Highlights
 
@@ -367,6 +389,14 @@ The main takeaway is that the core mechanisms are functional and measurable, whi
 - The web demo has no streaming response and no persistent history.
 - Benchmark numbers are hardware and software stack dependent.
 
-## Publishing
+## Improvement Roadmap
 
-See `docs/GITHUB_PUBLISHING.md` for a practical checklist. In short, keep model weights and cache directories out of Git, commit the code/docs/results you want to show, create a public GitHub repository, and push the local branch to `origin`.
+Future optimization should start with profiling rather than blind kernel changes. The first step is to add stage-level timing around `ModelRunner.run()` and use Nsight Systems to locate CPU scheduling overhead, kernel launch gaps, H2D copies, attention cost, linear cost, and sampler cost.
+
+Benchmarks should separate greedy decoding from sampling. If `temperature=0` greedy generation is much closer to vLLM than sampled generation, the sampler and logits post-processing path become the main targets.
+
+For decode, the main direction is to reduce per-step overhead by preallocating small input/context buffers, filling them in place, and reducing `.tolist()` synchronization and Python per-sequence bookkeeping. A larger follow-up is decode CUDA Graph capture by batch-size buckets, which should matter especially for small models where launch overhead is relatively expensive.
+
+Kernel-level work can proceed in two tracks: use FlashInfer or FlashAttention paged-KV decode kernels as a baseline, while continuing to improve the custom Triton attention kernels. RoPE and KV cache writeback are also natural candidates for tighter fusion.
+
+Finally, system-level experiments should tune KV `block_size` across smaller granularities and fix prefix-cache admission so the scheduler accounts for uncached tokens rather than full prompt length in shared-prefix workloads.
