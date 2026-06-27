@@ -2,9 +2,9 @@
 
 中文 | [English](#english)
 
-Nanonona 是一个以学习 AI infra 和大模型推理系统为目的的轻量级 LLM 推理框架。项目整体参考 nano-vllm 的控制流设计，实现了 continuous batching、paged attention、prefix cache，并用 Triton 手写了推理路径中的主要 CUDA 算子，包括 Linear、RMSNorm、RoPE、SwiGLU、prefill/decode attention 和采样相关逻辑。
+Nanonona 是一个以学习 AI infra 和大模型推理系统为目的的轻量级 LLM 推理框架。项目整体参考 nano-vllm 的控制流设计，实现了 continuous batching、paged attention、prefix cache，并用 Triton 手写了推理路径中的主要 CUDA 算子，包括 Linear、RMSNorm、RoPE、SwiGLU、prefill/decode attention 的相关逻辑。
 
-这个项目不是生产级 vLLM 替代品。它更适合作为一个可读、可测、可 benchmark 的推理引擎学习项目，用来展示从 CPU 调度层、KV cache 管理、模型结构拼装到 GPU kernel 实现的完整链路。
+这个项目不是生产级 vLLM 替代品。它是本人的一个可读、可测、可 benchmark 的推理引擎学习项目，用来学习从 CPU 调度层、KV cache 管理、模型结构拼装到 GPU kernel 实现的完整链路。
 
 ## 项目亮点
 
@@ -172,7 +172,7 @@ python -m unittest discover -s test -p "test_ops_correctness.py"
 | greedy exact match rate | 100% |
 | greedy token match rate avg | 100% |
 
-这说明在当前模型和测试 prompt 下，nanonona 的 logits 排序和 greedy 生成结果可以与 Transformers reference 对齐。由于自定义 kernel 使用低精度计算，max/mean absolute error 仍会存在小幅数值差异。
+这说明在当前模型和测试 prompt 下，nanonona 的 logits 排序和 greedy 生成结果可以与 Transformers reference 对齐。由于自定义 kernel 计算可能存在浮点误差，max/mean absolute error 仍会存在小幅数值差异。
 
 ### Continuous Batching
 
@@ -216,34 +216,6 @@ prefix cache 将实际需要执行的 prefill token 从 33792 降到 2048，TTFT
 - Web demo 没有流式输出，也不持久化历史对话。
 - prefix cache admission 还有一个已用 `expectedFailure` 记录的 scheduler 边界问题。
 - benchmark 结果依赖服务器 GPU、CUDA、PyTorch/Triton/vLLM 版本和 warmup 策略，不应跨机器直接比较绝对值。
-
-## 发布到 GitHub
-
-详细步骤见 `docs/GITHUB_PUBLISHING.md`。核心原则：
-
-1. 不要把模型权重、Triton cache、虚拟环境、`__pycache__` 提交到仓库。
-2. 可以保留 `DS-R1-Distill-Qwen-1.5B/config.json` 和 tokenizer 配置，让读者知道模型结构。
-3. 公开发布前先检查：
-
-```bash
-git status --short
-git diff --cached --stat
-```
-
-如果使用 GitHub CLI：
-
-```bash
-gh auth login
-gh repo create nanonona --public --source=. --remote=origin --push
-```
-
-如果已经在 GitHub 网页创建了 public repository：
-
-```bash
-git remote add origin https://github.com/<your-name>/nanonona.git
-git branch -M main
-git push -u origin main
-```
 
 ---
 

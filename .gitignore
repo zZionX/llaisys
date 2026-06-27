@@ -40,3 +40,6 @@ Thumbs.db
 
 # Notebook checkpoints
 .ipynb_checkpoints/
+
+
+docs/GITHUB_PUBLISHING.md
