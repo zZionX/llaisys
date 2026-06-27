@@ -1,0 +1,46 @@
+[
+  {
+    "prompt_id": 0,
+    "prompt_len": 64,
+    "top1_match": true,
+    "nanonona_top1": 220,
+    "transformers_top1": 220,
+    "topk_overlap": 0.9,
+    "cosine_similarity": 0.9994018077850342,
+    "max_abs_error": 0.28125,
+    "mean_abs_error": 0.08265434950590134
+  },
+  {
+    "prompt_id": 1,
+    "prompt_len": 64,
+    "top1_match": true,
+    "nanonona_top1": 220,
+    "transformers_top1": 220,
+    "topk_overlap": 1.0,
+    "cosine_similarity": 0.9998152852058411,
+    "max_abs_error": 0.21875,
+    "mean_abs_error": 0.027003919705748558
+  },
+  {
+    "prompt_id": 2,
+    "prompt_len": 64,
+    "top1_match": true,
+    "nanonona_top1": 220,
+    "transformers_top1": 220,
+    "topk_overlap": 1.0,
+    "cosine_similarity": 0.9998944997787476,
+    "max_abs_error": 0.1875,
+    "mean_abs_error": 0.023172441869974136
+  },
+  {
+    "prompt_id": 3,
+    "prompt_len": 64,
+    "top1_match": true,
+    "nanonona_top1": 220,
+    "transformers_top1": 220,
+    "topk_overlap": 1.0,
+    "cosine_similarity": 0.999816358089447,
+    "max_abs_error": 0.1875,
+    "mean_abs_error": 0.03286634385585785
+  }
+]

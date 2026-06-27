@@ -1,0 +1,28 @@
+{
+  "model_path": "./DS-R1-Distill-Qwen-1.5B",
+  "num_prompts": 4,
+  "prompt_len": 64,
+  "max_new_tokens": 32,
+  "topk": 10,
+  "timings": {
+    "nanonona_logits_s": 0.19518359005451202,
+    "nanonona_greedy_s": 1.6036919739563018,
+    "transformers_logits_s": 1.0387044220697135,
+    "transformers_greedy_s": 5.663487302954309
+  },
+  "nanonona_peak_cuda_memory_bytes": 21915839488,
+  "transformers_peak_cuda_memory_bytes": 3675596800,
+  "logits_top1_match_rate": 1.0,
+  "logits_topk_overlap_avg": 0.975,
+  "logits_cosine_similarity_avg": 0.9997319877147675,
+  "logits_max_abs_error_max": 0.28125,
+  "logits_mean_abs_error_avg": 0.04142426373437047,
+  "greedy_exact_match_rate": 1.0,
+  "greedy_token_match_rate_avg": 1.0,
+  "prompt_texts": [
+    "Nanonona compares logits against the reference Transformers implementation. Prompt salt 0. Nanonona compares logits against the reference Transformers implementation. Prompt salt 0. Nanonona compares logits against the reference Transformers implementation. Prompt salt 0. Nanonona compares logits against the reference Transformers implementation. Prompt salt",
+    "Nanonona compares logits against the reference Transformers implementation. Prompt salt 1. Nanonona compares logits against the reference Transformers implementation. Prompt salt 1. Nanonona compares logits against the reference Transformers implementation. Prompt salt 1. Nanonona compares logits against the reference Transformers implementation. Prompt salt",
+    "Nanonona compares logits against the reference Transformers implementation. Prompt salt 2. Nanonona compares logits against the reference Transformers implementation. Prompt salt 2. Nanonona compares logits against the reference Transformers implementation. Prompt salt 2. Nanonona compares logits against the reference Transformers implementation. Prompt salt",
+    "Nanonona compares logits against the reference Transformers implementation. Prompt salt 3. Nanonona compares logits against the reference Transformers implementation. Prompt salt 3. Nanonona compares logits against the reference Transformers implementation. Prompt salt 3. Nanonona compares logits against the reference Transformers implementation. Prompt salt"
+  ]
+}

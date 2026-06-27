@@ -1,0 +1,12 @@
+# Install torch and triton separately for your CUDA environment.
+# Example:
+#   pip install torch --index-url https://download.pytorch.org/whl/cu121
+#   pip install triton
+
+transformers>=4.44.0
+safetensors
+pydantic>=2.0
+pydantic-settings
+PyYAML
+numpy
+xxhash

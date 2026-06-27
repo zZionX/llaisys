@@ -1,0 +1,15 @@
+engine:
+  block_size: 256 # KV_cache分页的块大小
+  max_num_running_seqs: 128 # 引擎中批量运行的最大序列数
+  max_num_kvcache_blocks: 128 # 引擎中KV_cache的最大块数，根据GPU显存自动计算出的KV_cache块数，用户无需配置
+  max_num_running_batched_tokens: 8192 # LEARN: 引擎中批量运行的最大token数，这个参数主要会影响运行时的激活值显存占用大小
+  max_model_len: 8192 # LEARN: 单用户的最大输入长度，但我看nano-vllm中没用到这个参数限制输入prompt的长度，只用在model_runner的warmup中，所以暂时不考虑太多
+  gpu_memory_utilization: 0.9 # GPU显存利用率
+
+model:
+  path: "./DS-R1-Distill-Qwen-1.5B"
+  eos_token_id: 0
+
+server:
+  host: "0.0.0.0"
+  port: 8000

@@ -1,0 +1,59 @@
+{
+  "config": {
+    "model_path": "./DS-R1-Distill-Qwen-1.5B",
+    "scenario": "shared-prefix",
+    "mode": "continuous",
+    "num_requests": 32,
+    "prompt_len": 128,
+    "prefix_len": 1024,
+    "suffix_len": 32,
+    "max_new_tokens": 128,
+    "temperature": 0.0,
+    "ignore_eos": true,
+    "disable_prefix_cache": false
+  },
+  "summaries": [
+    {
+      "backend": "nanonona",
+      "mode": "continuous",
+      "scenario": "shared-prefix",
+      "num_requests": 32,
+      "prompt_tokens": 33792,
+      "output_tokens": 4096,
+      "total_tokens": 37888,
+      "total_s": 7.046017971937545,
+      "output_tok_per_s": 581.3212535524749,
+      "total_tok_per_s": 5377.221595360393,
+      "latency_avg_s": 7.045247114030644,
+      "latency_p50_s": 7.045247114030644,
+      "latency_p95_s": 7.045247114030644,
+      "ttft_avg_s": 0.1296233159955591,
+      "ttft_p50_s": 0.1296233159955591,
+      "ttft_p95_s": 0.1296233159955591,
+      "peak_cuda_memory_bytes": 22001030144
+    },
+    {
+      "backend": "vllm",
+      "mode": "continuous",
+      "scenario": "shared-prefix",
+      "num_requests": 32,
+      "prompt_tokens": 33792,
+      "output_tokens": 4096,
+      "total_tokens": 37888,
+      "total_s": 1.101551447995007,
+      "output_tok_per_s": 3718.3919166511464,
+      "total_tok_per_s": 34395.125229023106,
+      "latency_avg_s": 1.101551447995007,
+      "latency_p50_s": 1.101551447995007,
+      "latency_p95_s": 1.101551447995007,
+      "ttft_avg_s": null,
+      "ttft_p50_s": null,
+      "ttft_p95_s": null,
+      "peak_cuda_memory_bytes": 67108864
+    }
+  ],
+  "relative": {
+    "nanonona_output_tok_per_s_vs_vllm": 0.15633673549829136,
+    "nanonona_total_tok_per_s_vs_vllm": 0.15633673549829133
+  }
+}
